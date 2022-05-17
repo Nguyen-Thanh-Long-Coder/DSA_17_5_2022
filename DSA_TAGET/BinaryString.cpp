@@ -1,27 +1,54 @@
 #include <iostream>
 using namespace std;
 
-void sinh(int *a, int i, int n)
+struct node
 {
-	for(int k=0; k<=1; k++)
+	int data;
+	struct node* next;
+};
+typedef struct node* Node;
+
+void insertNodePoision(Node &head, int data, int vt)
+{
+	Node tmp = new node;
+	tmp->data = data;
+	tmp->next = nullptr;
+
+	Node prv = nullptr, cur = head;
+	if(!head || vt == 0)
 	{
-		a[i] = k;
-		if(i == n)
-		{
-			for(int j=1; j<=n; j++)
-				cout << a[j];
-			cout << endl;
-		}
-		else
-			sinh(a, i+1, n);
+		tmp->next = head;
+		head = tmp;
+		return;
+	}
+
+	for(int i=0; i<vt && cur != nullptr; i++)
+	{
+		prv = cur;
+		cur = cur->next;
+	}
+
+	prv->next = tmp;
+	tmp->next = cur;
+}
+
+void printList(Node head)
+{
+	while(head != nullptr)
+	{
+		cout << head->data << " ";
+		head = head->next;
 	}
 }
 
 int main()
 {
-	int a[100], n;
-	cin >> n;
-	sinh(a, 1, n);
+	Node head = nullptr;
 
+	for(int i=0; i<=10; i++)
+		insertNodePoision(head, i, i);
+	insertNodePoision(head, 2002, 8);
+
+	printList(head);
 	return 0;
 }
