@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 using namespace std;
 #define MonHoc 3
@@ -17,6 +18,7 @@ struct SinhVien
 		getline(cin, hoTen);
 		cout << "Nhap que quan: ";
 		getline(cin, queQuan);
+
 		for(int i=0; i<MonHoc; i++)
 		{
 			cout << "Nhap diem mon thu " << i + 1 << ": ";
@@ -55,8 +57,9 @@ struct SinhVien
 SinhVien* nhapThongTinDSSV(int &sl);
 void hienThiDSSV(SinhVien *ptr, int sl);
 void docFileDSSV(SinhVien *&ptr, int &sl, ifstream &filein);
-void timKiemSinhVienTheoTen(SinhVien *ptr, int sl, string hoTen);
-void timKiemSinhVienTheoQueQuan(SinhVien *ptr, int sl, string queQuan);
+bool ktXauCon(string cha, string kt);
+SinhVien* timKiemSinhVienTheoTen(SinhVien *ptr, int sl, string hoTen);
+SinhVien* timKiemSinhVienTheoQueQuan(SinhVien *ptr, int sl, string queQuan);
 void sapXepSVTangDanHoTen(SinhVien *ptr, int sl);
 void ghiFileDSSVHocBong(SinhVien *ptr, int sl, ofstream &fileout);
 bool ktHocBong(SinhVien a);
@@ -76,13 +79,17 @@ int main()
 	docFileDSSV(ptrSV, sl, filein);
 	hienThiDSSV(ptrSV, sl);
 
-	sapXepSVTangDanHoTen(ptrSV, sl);
-	cout << endl << "DS SINH VIEN SAU KHI SAP XEP" << endl;
-	hienThiDSSV(ptrSV, sl);
-
+	string tim;
+	getline(cin, tim);
+	SinhVien *timKiem = timKiemSinhVienTheoTen(ptrSV, sl, tim);
+	cout << "DSSV tim kiem" << endl;
+	hienThiDSSV(timKiem, 2);
 	ghiFileDSSVHocBong(ptrSV, sl, fileout);
+
 	filein.close();
 	fileout.close();
+
+	delete [] ptrSV;
 
 	return 0;
 }
@@ -117,7 +124,7 @@ void hienThiDSSV(SinhVien *ptr, int sl)
 void docFileDSSV(SinhVien *&ptr, int &sl, ifstream &filein)
 {
 	filein >> sl;
-	filein.ignore();
+	filein.ignore(1);
 	ptr = new SinhVien[sl];
 	// filein.seekg(1, ios::cur);
 
@@ -128,34 +135,64 @@ void docFileDSSV(SinhVien *&ptr, int &sl, ifstream &filein)
 	}
 }
 
-void timKiemSinhVienTheoTen(SinhVien *ptr, int sl, string hoTen)
+bool ktXauCon(string cha, string kt)
 {
-	for(int i=0; i<sl; i++)
+	for(int i=0; i<=cha.length()-kt.length(); i++)
 	{
-		if(ptr[i].hoTen == hoTen)
+		if(cha[i] == kt[0])
 		{
-			cout << "Tim thay" << endl;
-			ptr[i].xuatThongTinSinhVien();
-			return; 
+			bool flag = true;
+			for(int k=1; k<kt.length(); k++)
+			{
+				if(cha[i+k] != kt[k])
+				{
+					flag = false;
+					break;
+				}
+			}
+
+			if(flag)
+				return true;
 		}
 	}
 
-	cout << "Khong tim thay" << endl;
+	return false;
 }
 
-void timKiemSinhVienTheoQueQuan(SinhVien *ptr, int sl, string queQuan)
+SinhVien* timKiemSinhVienTheoTen(SinhVien *ptr, int sl, string hoTen)
 {
+	SinhVien *rec = nullptr;
+	vector<SinhVien> vt;
+
 	for(int i=0; i<sl; i++)
 	{
-		if(ptr[i].queQuan == queQuan)
-		{
-			cout << "Tim thay" << endl;
-			ptr[i].xuatThongTinSinhVien();
-			return;
-		}
+		if(ktXauCon(ptr[i].hoTen, hoTen))
+			vt.push_back(ptr[i]);
 	}
 
-	cout << "Khong tim thay" << endl;
+	rec = new SinhVien[vt.size()];
+	for(int i=0; i<vt.size(); i++)
+		rec[i] = vt[i];
+
+	return rec;
+}
+
+SinhVien* timKiemSinhVienTheoQueQuan(SinhVien *ptr, int sl, string queQuan)
+{
+	SinhVien *rec = nullptr;
+	vector<SinhVien> vt;
+
+	for(int i=0; i<sl; i++)
+	{
+		if(ktXauCon(ptr[i].queQuan, queQuan))
+			vt.push_back(ptr[i]);
+	}
+
+	rec = new SinhVien[vt.size()];
+	for(int i=0; i<vt.size(); i++)
+		rec[i] = vt[i];
+
+	return rec;
 }
 
 void sapXepSVTangDanHoTen(SinhVien *ptr, int sl)
