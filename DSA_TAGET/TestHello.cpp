@@ -425,6 +425,10 @@ void mergeSortLL(Node &head)
 
 void swapNodeLLNotData(Node &head, int data1, int data2)
 {
+	if(data1 == data2)
+		return;
+
+	int count1 = 0, count2 = 0;
 	Node prv1, prv2, cur1, cur2;
 	prv1 = prv2 = nullptr;
 	cur1 = cur2 = head;
@@ -433,31 +437,153 @@ void swapNodeLLNotData(Node &head, int data1, int data2)
 	{
 		prv1 = cur1;
 		cur1 = cur1->next;
+		count1++;
 	}
 
 	while(cur2 != nullptr && cur2->data != data2)
 	{
 		prv2 = cur2;
 		cur2 = cur2->next;
+		count2++;
 	}
 
+	if(cur1 == nullptr || cur2 == nullptr)
+		return;
+
 	Node calm = cur2->next;
-	prv1->next = cur2;
-	prv2->next = cur1;
+	if(prv1 != nullptr)
+		prv1->next = cur2;
+	if(prv2 != nullptr)
+		prv2->next = cur1;
+
 	cur2->next = cur1->next;
 	cur1->next = calm;
+
+	if(count1 > count2)
+		head = cur1;
+	else
+		head = cur2;
+}
+
+Node returnSwapTwoNode(Node one, Node two)
+{
+	one->next = two->next;
+	two->next = one;
+	return two;
+}
+
+void swapTwoNode(Node &head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return;
+	head = returnSwapTwoNode(head, head->next);
+	Node run = head->next;
+	while(run->next != nullptr && run->next->next != nullptr)
+	{
+		run->next = returnSwapTwoNode(run->next, run->next->next);
+		run = run->next->next;
+	}
+}
+
+void swapNodeRer(Node &head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return;
+
+	Node nextNode = head->next;
+	head->next = nextNode->next;
+	nextNode->next = head;
+	head = nextNode;
+
+	swapNodeRer(head->next->next);
+}
+
+void moveLastToFront(Node &head)
+{
+	if(head == nullptr)
+		return;
+
+	Node prv = nullptr;
+	Node run = head;
+	while(run->next != nullptr)
+	{
+		prv = run;
+		run = run->next;
+	}
+
+	if(prv != nullptr)
+	{
+		prv->next = nullptr;
+		run->next = head;
+		head = run;
+	}
+}
+
+Node intersectionSort(Node head, Node head2)
+{
+	Node insec = nullptr;
+	Node returnInsec = nullptr;
+	while(head != nullptr && head2 != nullptr)
+	{
+		if(head->data > head2->data)
+			head2 = head2->next;
+		else if(head->data < head2->data)
+			head = head->next;
+		else
+		{
+			Node tmp = new node;
+			tmp->data = head->data;
+			tmp->next = nullptr;
+
+			if(insec == nullptr)
+			{
+				returnInsec = tmp;
+				insec = tmp;
+			}
+			else
+			{
+				insec->next = tmp;
+				insec = insec->next;
+			}
+			head = head->next;
+			head2 = head2->next;
+		}
+	}
+
+	return returnInsec;
 }
 
 int main()
 {
 	srand(time(NULL));
 	Node head = nullptr;
-	for(int i=0; i<10; i++)
-		insertNodePosition(head, i+1, i);
+	Node head2 = nullptr;
+
+	int n1, n2;
+	cin >> n1 >> n2;
+
+	for(int i=0; i<n1; i++)
+	{
+		int x;
+		cin >> x;
+		insertNodePosition(head, x, i);
+	}
+
+	for(int i=0; i<n2; i++)
+	{
+		int x;
+		cin >> x;
+		insertNodePosition(head2, x, i);
+	}
+
 	printList(head);
 	cout << endl;
+	printList(head2);
+	cout << endl;
 
-	swapNodeLLNotData(head, 2, 9);
-	printList(head);
+	Node insec = intersectionSort(head, head2);
+	printList(insec);
+
 	return 0;
 }
+
