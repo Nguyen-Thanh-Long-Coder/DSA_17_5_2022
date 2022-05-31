@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <fstream>
 using namespace std;
@@ -6,13 +7,9 @@ using namespace std;
 int main()
 {
 	ifstream f;
-	f.open("HiDay.txt", ios::in);
-	f.seekg(4, ios_base::cur);
-	f.seekg(-1, ios_base::cur);
-
-	string s;
-	getline(f, s);
-	cout << s << endl;
+	f.open("HiDay.txt", ios_base::in);
+	string str = "Nguyen Thanh Long";
+	cout << setfill('0') << setw(20) << str << endl;
 
 	f.close();
 
