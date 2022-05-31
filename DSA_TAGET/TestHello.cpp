@@ -553,10 +553,36 @@ Node intersectionSort(Node head, Node head2)
 	return returnInsec;
 }
 
+Node intersectionPoinTwoLL(Node head1, Node head2)
+{
+	int len1 = countLengthLL(head1);
+	int len2 = countLengthLL(head2);
+
+	while(len1 > len2)
+	{
+		head1 = head1->next;
+		len1--;
+	}
+	
+	while(len1 < len2)
+	{
+		head2 = head2->next;
+		len2--;
+	}
+
+	while(head1->next != head2->next)
+	{
+		head1 = head1->next;
+		head2 = head2->next;
+	}
+
+	return head1->next;
+}
+
 int main()
 {
 	srand(time(NULL));
-	Node head = nullptr;
+	Node head1 = nullptr;
 	Node head2 = nullptr;
 
 	int n1, n2;
@@ -566,7 +592,7 @@ int main()
 	{
 		int x;
 		cin >> x;
-		insertNodePosition(head, x, i);
+		insertNodePosition(head1, x, i);
 	}
 
 	for(int i=0; i<n2; i++)
@@ -576,13 +602,15 @@ int main()
 		insertNodePosition(head2, x, i);
 	}
 
-	printList(head);
+	printList(head1);
 	cout << endl;
+
+	head2->next->next->next->next = head1->next->next->next;
 	printList(head2);
 	cout << endl;
 
-	Node insec = intersectionSort(head, head2);
-	printList(insec);
+	Node intersectionPoint = intersectionPoinTwoLL(head1, head2);
+	cout << intersectionPoint->data << endl;
 
 	return 0;
 }
