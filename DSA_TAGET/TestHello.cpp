@@ -579,38 +579,121 @@ Node intersectionPoinTwoLL(Node head1, Node head2)
 	return head1->next;
 }
 
+void quickSortArray(int *a, int l, int r)
+{
+	if(l >= r)
+		return;
+
+	int pivot = a[(l + r) / 2];
+
+	int i = l, j = r;
+
+	l--; r++;
+	while(l <= r)
+	{
+		do
+		{
+			l++;
+		}while(a[l] < pivot);
+
+		do
+		{
+			r--;
+		}while(a[r] > pivot);
+
+		if(l < r)
+			swap(a[l], a[r]);
+	}
+
+	quickSortArray(a, i, r);
+	quickSortArray(a, l, j);
+}
+
+Node quickSortLL(Node head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return head;
+
+	vector<Node> tmpLL;
+	Node runCnt = head;
+	Node prv = nullptr;
+
+	while(runCnt != nullptr)
+	{
+		prv = runCnt;
+		tmpLL.push_back(runCnt);
+		runCnt = runCnt->next;
+		prv->next = nullptr;
+	}
+
+	int i = -1, j = tmpLL.size();
+	int pivot = tmpLL[0]->data;
+
+	while(i < j)
+	{
+		i++; j--;
+		while(i < tmpLL.size() && tmpLL[i]->data < pivot)
+		{
+			if(i - 1 >= 0 && i < tmpLL.size())
+				tmpLL[i-1]->next = tmpLL[i];
+			i++;
+		}
+
+		while(j >= 0 && tmpLL[j]->data >= pivot)
+		{
+			if(j + 1 < tmpLL.size())
+				tmpLL[j]->next = tmpLL[j+1];
+			j--;
+		}
+
+		if(i < j)
+		{
+			swap(tmpLL[i], tmpLL[j]);
+			if(i - 1 >= 0)
+				tmpLL[i-1]->next = tmpLL[i];
+			if(j + 1 < tmpLL.size())
+				tmpLL[j]->next = tmpLL[j+1];
+		}
+	}
+	
+
+	if(i > 0)
+	{
+		Node first = quickSortLL(tmpLL[0]);
+		while(first->next)
+			first = first->next;
+		Node last = quickSortLL(tmpLL[i]);
+		first->next = last;
+	}
+
+	return tmpLL[0];
+}
+
 int main()
 {
 	srand(time(NULL));
-	Node head1 = nullptr;
-	Node head2 = nullptr;
+	Node head = nullptr;
+	int n;
+	cin >> n;
 
-	int n1, n2;
-	cin >> n1 >> n2;
-
-	for(int i=0; i<n1; i++)
+	for(int i=0; i<n; i++)
 	{
-		int x;
-		cin >> x;
-		insertNodePosition(head1, x, i);
+		int x; cin >> x;
+		insertNodePosition(head, x, i);
 	}
 
-	for(int i=0; i<n2; i++)
+	for(Node k = head; k != nullptr; k = k->next)
 	{
-		int x;
-		cin >> x;
-		insertNodePosition(head2, x, i);
+		cout << k->data << " ";
 	}
-
-	printList(head1);
 	cout << endl;
 
-	head2->next->next->next->next = head1->next->next->next;
-	printList(head2);
+	head = quickSortLL(head);
+	for(Node k = head; k != nullptr; k = k->next)
+	{
+		cout << k->data << " ";
+	}
 	cout << endl;
-
-	Node intersectionPoint = intersectionPoinTwoLL(head1, head2);
-	cout << intersectionPoint->data << endl;
 
 	return 0;
 }
