@@ -609,92 +609,220 @@ void quickSortArray(int *a, int l, int r)
 	quickSortArray(a, l, j);
 }
 
-Node quickSortLL(Node head)
+Node getTail(Node head)
+{
+	while(head != nullptr && head->next != nullptr)
+		head = head->next;
+
+	return head;
+}
+
+Node partition(Node head, Node end, Node &newHead, Node &newTail)
+{
+	Node pivot = end;
+	Node prv = nullptr, cur = head, tail = end;
+
+	while(cur != pivot)
+	{
+		if(cur->data < pivot->data)
+		{
+			if(newHead == nullptr)
+				newHead = cur;
+
+			prv = cur;
+			cur = cur->next;
+		}
+		else
+		{
+			if(prv != nullptr)
+				prv->next = cur->next;
+
+			Node tmp = cur->next;
+			cur->next = nullptr;
+			tail->next = cur;
+			tail = cur;
+			cur = tmp;
+		}
+	}
+
+	if(newHead == nullptr)
+		newHead = pivot;
+
+	newTail = tail;
+	
+	return pivot;
+}
+
+Node quickSortRecur(Node head, Node tail)
+{
+	if(!head || head == tail)
+		return head;
+
+	Node newHead = nullptr, newTail = nullptr;
+	Node pivot = partition(head, tail, newHead, newTail);
+
+	if(pivot->data != newHead->data)
+	{
+		Node tmp = newHead;
+		while(tmp->next != pivot)
+		{
+			tmp = tmp->next;
+		}
+
+		tmp->next = nullptr;
+		newHead = quickSortRecur(newHead, tmp);
+		Node tailTmp = getTail(newHead);
+		tailTmp->next = pivot;
+	}
+
+	pivot->next = quickSortRecur(pivot->next, newTail);
+
+	return newHead;
+
+}
+
+void segregateOddEven(Node &head)
+{
+	Node flag = nullptr;
+	Node run = head, prv = nullptr;
+	Node tail = getTail(head);
+	head = nullptr;
+
+	while(run != flag)
+	{
+		if(run->data & 1)
+		{
+			if(flag == nullptr)
+				flag = run;
+
+			tail->next = run;
+			tail = run;
+
+			Node tmp = run->next;
+			if(prv != nullptr)
+				prv->next = tmp;
+			run->next = nullptr;
+			run = tmp;
+		}
+		else
+		{
+			if(head == nullptr)
+				head = run;
+			prv = run;
+			run = run->next;
+		}
+	}
+}
+
+Node reverseLLTwoP1(Node head)
 {
 	if(head == nullptr || head->next == nullptr)
 		return head;
 
-	vector<Node> tmpLL;
-	Node runCnt = head;
-	Node prv = nullptr;
+	Node cur = head, prv = nullptr;
 
-	while(runCnt != nullptr)
+	while(cur != nullptr)
 	{
-		prv = runCnt;
-		tmpLL.push_back(runCnt);
-		runCnt = runCnt->next;
-		prv->next = nullptr;
+		cur = (Node) ((int)cur^(int)prv^(int)cur->next^(int)(cur->next = prv)^(int)(prv = cur));
+	} 
+
+	return prv;
+}
+
+Node reverseLLTwoP2(Node head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return head;
+	Node next = nullptr, cur = head;
+
+	while(cur->next != nullptr)
+	{
+		next = cur->next;
+		cur->next = next->next;
+		next->next = head;
+		head = next;
 	}
 
-	int i = -1, j = tmpLL.size();
-	int pivot = tmpLL[0]->data;
+	return head;
+}
 
-	while(i < j)
+Node mergeSortReverseOrder(Node head1, Node head2)
+{
+	Node dummy = new node;
+	dummy->next = nullptr;
+	dummy->data = -1;
+
+	while(head1 != nullptr && head2 != nullptr)
 	{
-		i++; j--;
-		while(i < tmpLL.size() && tmpLL[i]->data < pivot)
+		if(head1->data < head2->data)
 		{
-			if(i - 1 >= 0 && i < tmpLL.size())
-				tmpLL[i-1]->next = tmpLL[i];
-			i++;
+			Node tmp = head1->next;
+			head1->next = dummy->next;
+			dummy->next = head1;
+			head1 = tmp;
 		}
-
-		while(j >= 0 && tmpLL[j]->data >= pivot)
+		else
 		{
-			if(j + 1 < tmpLL.size())
-				tmpLL[j]->next = tmpLL[j+1];
-			j--;
-		}
-
-		if(i < j)
-		{
-			swap(tmpLL[i], tmpLL[j]);
-			if(i - 1 >= 0)
-				tmpLL[i-1]->next = tmpLL[i];
-			if(j + 1 < tmpLL.size())
-				tmpLL[j]->next = tmpLL[j+1];
+			Node tmp = head2->next;
+			head2->next = dummy->next;
+			dummy->next = head2;
+			head2 = tmp;
 		}
 	}
-	
 
-	if(i > 0)
+	while(head1)
 	{
-		Node first = quickSortLL(tmpLL[0]);
-		while(first->next)
-			first = first->next;
-		Node last = quickSortLL(tmpLL[i]);
-		first->next = last;
+		Node tmp = head1->next;
+		head1->next = dummy->next;
+		dummy->next = head1;
+		head1 = tmp;
 	}
 
-	return tmpLL[0];
+	while(head2)
+	{
+		Node tmp = head2->next;
+		head2->next = dummy->next;
+		dummy->next = head2;
+		head2 = tmp;
+	}
+
+	Node ret = dummy->next;
+	delete dummy;
+	return ret;
+}
+
+Node reverseGroup(Node head, const int k)
+{
+	Node prv = nullptr, cur = head;
+	int count = 0;
+
+	while(cur != nullptr && count < k)
+	{
+		cur = (Node)((int)cur ^ (int)prv ^ (int)(cur->next) ^ (int)(cur->next = prv) ^ (int)(prv = cur));
+		count++;
+	}
+
+	if(cur != nullptr)
+		head->next = reverseGroup(cur ,k);
+
+	return prv;
 }
 
 int main()
 {
-	srand(time(NULL));
-	Node head = nullptr;
-	int n;
-	cin >> n;
+	Node head1 = nullptr;
+	int n, k, x;
+	cin >> n >> k;
 
 	for(int i=0; i<n; i++)
 	{
-		int x; cin >> x;
-		insertNodePosition(head, x, i);
+		cin >> x;
+		insertNodePosition(head1, x, i);
 	}
 
-	for(Node k = head; k != nullptr; k = k->next)
-	{
-		cout << k->data << " ";
-	}
-	cout << endl;
+	head1 = reverseGroup(head1, k);
 
-	head = quickSortLL(head);
-	for(Node k = head; k != nullptr; k = k->next)
-	{
-		cout << k->data << " ";
-	}
-	cout << endl;
-
+	printList(head1);
 	return 0;
 }
 
