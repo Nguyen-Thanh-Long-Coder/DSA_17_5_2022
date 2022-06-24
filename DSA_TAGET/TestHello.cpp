@@ -9,6 +9,30 @@ struct node
 };
 typedef struct node* Node;
 
+struct coordinate
+{
+	int x;
+	int y;
+	struct coordinate* next;
+};
+typedef struct coordinate* Coordinate;
+
+struct l
+{
+	int data;
+	struct l *next;
+	struct l *child;
+};
+typedef struct l* List;
+
+struct doubleLL
+{
+	int data;
+	struct doubleLL* next;
+	struct doubleLL* rand;
+};
+typedef struct doubleLL* DoubleLL;
+
 void insertNodePosition(Node &head, int data, int vt)
 {
 	Node tmp = new node;
@@ -76,7 +100,7 @@ void deleteNodeByPosition(Node &head, int vt)
 	}
 }
 
-void deleteLinkedList(Node &head)
+void deleteListnkedListst(Node &head)
 {
 	Node tmp = nullptr;
 	while(head != nullptr)
@@ -88,7 +112,7 @@ void deleteLinkedList(Node &head)
 	}
 }
 
-void printList(Node head)
+void printListst(Node head)
 {
 	while(head != nullptr)
 	{
@@ -102,7 +126,7 @@ int countLengthLL(Node head)
 	if(head == nullptr)
 		return 0;
 	return countLengthLL(head->next) + 1;
-	deleteLinkedList(head);
+	deleteListnkedListst(head);
 }
 
 Node searchNode(Node head, int data)
@@ -169,7 +193,7 @@ void returnIndexForEnd(Node head, int n)
 			fast = fast->next;
 			low = low->next;
 		}
-		printList(low);
+		printListst(low);
 	}
 }	
 
@@ -211,7 +235,7 @@ Node reverLL(Node head)
 	return head;
 }
 
-bool isPalindromeLL2(Node head)
+bool isPaListndromeLL2(Node head)
 {
 	if(head == nullptr)
 		return true;
@@ -259,11 +283,11 @@ bool isPalindromeLL2(Node head)
 	return check;
 }
 
-bool isPalindromeLL(Node &head, Node recur)
+bool isPaListndromeLL(Node &head, Node recur)
 {
 	if(recur == nullptr)
 		return true;
-	bool isp = isPalindromeLL(head, recur->next);
+	bool isp = isPaListndromeLL(head, recur->next);
 
 	if(isp == false)
 		return false;
@@ -273,7 +297,7 @@ bool isPalindromeLL(Node &head, Node recur)
 	return isp; 
 }
 
-Node removeDuplicates(Node head)
+Node removeDupListcates(Node head)
 {
 	// if(head == nullptr)
 	// 	return;
@@ -291,7 +315,7 @@ Node removeDuplicates(Node head)
 	// }
 	if(head == nullptr || head->next == nullptr)
 		return head;
-	Node tmp = removeDuplicates(head->next);
+	Node tmp = removeDupListcates(head->next);
 	if(head->data == tmp->data)
 	{
 		head->next = tmp->next;
@@ -300,7 +324,7 @@ Node removeDuplicates(Node head)
 	return head;
 }
 
-Node removeDuplicatesNotSort(Node head)
+Node removeDupListcatesNotSort(Node head)
 {
 	Node returNode = head;
 	while(head)
@@ -406,6 +430,7 @@ void patisionLL(Node &leftLLHead, Node rigthLL)
 		rigthLL = rigthLL->next;
 		run = run->next;
 	}
+	
 	leftLLHead = returnNode->next;
 	delete returnNode;
 }
@@ -866,7 +891,7 @@ Node alternateOddEven(Node head)
 	// 	return head;
 
 	// int flag = !(head->data & 1);
-	// Node updateLink = head, cur = head->next, prv = head;
+	// Node updateListnk = head, cur = head->next, prv = head;
 
 	// while(cur)
 	// {
@@ -881,11 +906,11 @@ Node alternateOddEven(Node head)
 	// 		if(cur != nullptr)
 	// 		{
 	// 			prv->next = cur->next;
-	// 			cur->next = updateLink->next;
-	// 			updateLink->next = cur;
-	// 			updateLink = updateLink->next;
-	// 			cur = updateLink->next;
-	// 			prv = updateLink;
+	// 			cur->next = updateListnk->next;
+	// 			updateListnk->next = cur;
+	// 			updateListnk = updateListnk->next;
+	// 			cur = updateListnk->next;
+	// 			prv = updateListnk;
 	// 		}
 
 	// 		flag = 0;
@@ -901,11 +926,11 @@ Node alternateOddEven(Node head)
 	// 		if(cur != nullptr)
 	// 		{
 	// 			prv->next = cur->next;
-	// 			cur->next = updateLink->next;
-	// 			updateLink->next = cur;
-	// 			updateLink = updateLink->next;
-	// 			cur = updateLink->next;
-	// 			prv = updateLink;
+	// 			cur->next = updateListnk->next;
+	// 			updateListnk->next = cur;
+	// 			updateListnk = updateListnk->next;
+	// 			cur = updateListnk->next;
+	// 			prv = updateListnk;
 	// 		}
 			
 	// 		flag = 1;
@@ -1315,23 +1340,631 @@ Node rotateLLByK(Node head, int k)
 	return newHead;
 }
 
+Node add(Node head1, Node head2)
+{
+	int cnt1 = countLengthLL(head1), cnt2 = countLengthLL(head2);
+	Node element = new node;
+
+	if(cnt1 > cnt2)
+		element->data = 0;
+	else
+		element->data = head2->data;
+
+	if(head1->next == nullptr && head2->next == nullptr)
+	{
+		element->data = head1->data + element->data;
+		element->next = nullptr;
+	}
+	else if(cnt1 > cnt2)
+		element->next = add(head1->next, head2);
+	else
+		element->next = add(head1->next, head2->next);
+
+	if(element->next != nullptr)
+	{
+		element->data = element->data + head1->data + element->next->data / 10;
+		element->next->data = element->next->data % 10;
+	}
+
+	return element;
+}
+
+Node addTwoNumLLHard(Node head1, Node head2)
+{
+	int cnt1 = countLengthLL(head1), cnt2 = countLengthLL(head2);
+	if(cnt1 < cnt2)
+		swap(head1, head2);
+
+	Node ret = add(head1, head2);
+
+	if(ret->data > 9)
+	{
+		Node element = new node;
+		element->data = 1;
+		ret->data %= 10;
+		element->next = ret;
+		ret = element;
+	}
+
+	return ret;
+}
+
+Node sortLLBy012(Node head)
+{
+	Node p0, p1, p2, head0, head1, head2;
+	head0 = head1 = head2 = p0 = p1 = p2 = nullptr;
+
+	while(head != nullptr)
+	{
+		Node nextNode = head->next;
+		if(head->data == 0)
+		{
+			if(head0 == nullptr)
+				head0 = head;
+			else
+				p0->next = head;
+			p0 = head;
+		}
+		else if(head->data == 1)
+		{
+			if(head1 == nullptr)
+				head1 = head;
+			else
+				p1->next = head;
+
+			p1 = head;
+		}
+		else
+		{
+			if(head2 == nullptr)
+				head2 = head;
+			else
+				p2->next = head;
+
+			p2 = head;
+		}
+
+		head = nextNode;
+	}
+
+	if(head1 && head2 && head0)
+	{
+		p0->next = head1;
+		p1->next = head2;
+		p2->next = nullptr;
+	}
+
+
+	return head0;
+}
+
+List flattenLLMutilLevel(List head)
+{
+	if(head == nullptr)
+		return head;
+
+	List ret = nullptr, prv = nullptr;
+	vector<List> vtIterate;
+	vector<List> vtChild;
+	vtIterate.push_back(head);
+
+	do
+	{
+		for(int i=0; i<vtIterate.size(); i++)
+		{
+			List run = vtIterate[i];
+
+			while(run != nullptr)
+			{
+				if(ret == nullptr)
+					ret = run;
+				else
+					prv->next = run;
+
+				if(run->child != nullptr)
+				{
+					vtChild.push_back(run->child);
+					run->child = nullptr;
+				}
+
+				prv = run;
+				run = run->next;
+			}
+		}
+
+		vtIterate.clear();
+		vtIterate = vtChild;
+		vtChild.clear();
+
+	}while(vtIterate.size());
+
+	return ret;
+}
+
+List createList(int data)
+{
+	List tmp = new l;
+	tmp->data = data;
+	tmp->next = tmp->child = nullptr;
+	return tmp;
+}
+
+Node deleMAfterNNode(Node head, int m, int n)
+{
+	if(m == 0 && n == 0)
+		return head;
+	else if(m == 0 && n > 0)
+	{
+		deleteListnkedListst(head);
+		return nullptr;
+	}
+	else
+	{
+		Node cur, tail;
+		cur = tail = head;
+
+		while(cur != nullptr)
+		{
+			for(int i=1; i<=m && cur != nullptr; i++)
+			{
+				tail = cur;
+				cur = cur->next;
+			}
+		
+			for(int i=1; i<=n && cur != nullptr; i++)
+			{
+				Node next = cur->next;
+				delete cur;
+				cur = next;
+			}
+
+			tail->next = cur;
+		}
+
+		return head;
+	}
+} 
+
+Node swapPairWiseLL(Node head)
+{
+	if(head == nullptr && head->next == nullptr)
+		return head;
+
+	Node rec, next;
+	
+	next = head->next;
+	rec = head;
+	head->next = next->next;
+	next->next = head;
+	head = next;
+
+	while(rec->next != nullptr && rec->next->next != nullptr)
+	{
+		next = rec->next->next;
+		rec->next->next = next->next;
+		next->next = rec->next;
+		rec->next = next;
+		rec = next->next;
+	}
+
+	return head;
+}
+
+Node swapPairWiseLLRecur(Node head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return head;
+
+	Node next = head->next;
+	head->next = next->next;
+	next->next = head;
+	head->next = swapPairWiseLLRecur(head->next);
+
+	return next;
+}
+
+Coordinate deleteMiddleTakeFrontAndTail(Coordinate head1, Coordinate head2)
+{
+
+	if(head1 == head2 || head1 == nullptr)
+		return head1;
+
+	while(head1->next != head2)
+	{
+		Coordinate dele = head1->next;
+		head1->next = dele->next;
+		delete dele;
+	}
+
+	return head1;
+}
+
+Coordinate removeNodeMiddleInCoordinate(Coordinate head)
+{
+	if(head == nullptr || head->next == nullptr)
+		return head;
+
+	bool vertical, horizontal;
+	vertical = horizontal = false;
+
+	if(head->x == head->next->x)
+		vertical = true;
+	else
+		horizontal = true;
+
+	Coordinate front, cur;
+	front = cur = head;
+
+	while(cur->next != nullptr)
+	{
+		if(vertical) // nam doc thi xet theo x
+		{
+			while(cur->next != nullptr && cur->x == cur->next->x)
+				cur = cur->next;
+			// vertical = false;
+			// horizontal = true;
+		}
+		else if(horizontal) // nam ngang xet theo y
+		{
+			while(cur->next != nullptr && cur->y == cur->next->y)
+				cur = cur->next;
+			// vertical = true;
+			// horizontal = false;
+		}
+
+		vertical ^= true;
+		horizontal ^= true;
+
+		deleteMiddleTakeFrontAndTail(front, cur);
+		front = cur;
+	}
+
+	return head;
+}
+
+Coordinate createCoordinate(int x, int y)
+{
+	Coordinate tmp = new coordinate;
+	tmp->x = x;
+	tmp->y = y;
+	tmp->next = nullptr;
+
+	return tmp;
+}
+
+DoubleLL createElementDoubleLL(int data)
+{
+	DoubleLL tmp = new doubleLL;
+	tmp->data = data;
+	tmp->next = tmp->rand = nullptr;
+
+	return tmp;
+}
+
+DoubleLL cloneLLByNextRand(DoubleLL head)
+{
+	DoubleLL ret = nullptr, prv;
+	vector<DoubleLL> root;
+
+	while(head != nullptr)
+	{
+		DoubleLL headNext = head->next;
+
+		if(ret == nullptr)
+			ret = prv = createElementDoubleLL(head->data);
+		else
+		{
+			prv->next = createElementDoubleLL(head->data);
+			prv = prv->next;
+		}
+
+		head->next = prv;
+		root.push_back(head);
+		head = headNext;
+	}
+
+	prv = ret;
+
+	for(int i=0; i<root.size(); i++)
+	{
+		prv->rand = root[i]->rand->next;
+		prv = prv->next;
+	}
+
+	for(int i=0; i<root.size()-1; i++)
+		root[i]->next = root[i+1];
+
+	return ret;
+
+	//// test
+	// DoubleLL head, prv;
+	// head = prv = createElementDoubleLL(1);
+	// prv->next = createElementDoubleLL(2);
+	// prv = prv->next;
+	// prv->next = createElementDoubleLL(3);
+	// prv = prv->next;
+	// prv->next = createElementDoubleLL(4);
+	// prv = prv->next;
+	// prv->next = createElementDoubleLL(5);
+
+	// prv = head;
+	// prv->rand = head->next->next;
+	// prv = prv->next;
+	// prv->rand = head;
+	// prv = prv->next;
+	// prv->rand = prv->next->next;
+	// prv = prv->next;
+	// prv->rand = head->next->next;
+	// prv = prv->next;
+	// prv->rand = head->next;
+
+	// printDoubleLL(head);
+	// DoubleLL result = cloneLLByNextRand(head);
+	// cout << "result" << endl;
+	// printDoubleLL(result);
+}
+
+void printDoubleLL(DoubleLL head)
+{
+	DoubleLL tmp = head;
+	while(tmp)
+	{
+		if(tmp->rand != nullptr)
+			cout << "data: " << tmp->data << "   rand: " << tmp->rand->data << endl;
+		else
+			cout << "data: " << tmp->data << "  rand: nullptr" << endl;
+		tmp = tmp->next;
+	}
+}
+
+void insertionSortArray(int *a, int n)
+{
+	for(int i=1; i<n; i++)
+	{
+		int cur = a[i], index = i-1;
+		while(index >= 0 && a[index] > cur)
+		{
+			a[index+1] = a[index];
+			index--;
+		}
+
+		a[index+1] = cur;
+	}
+}
+
+Node insertionSortLL(Node head)
+{
+	vector<Node> vt;
+	while(head != nullptr)
+	{
+		vt.push_back(head);
+		head = head->next;
+	}
+
+	for(int i=1; i<vt.size(); i++)
+	{
+		Node check = vt[i];
+		int index = i-1;
+
+		while(index >= 0 && vt[index]->data > check->data)
+		{
+			vt[index+1] = vt[index];
+			index--;
+		}
+
+		vt[index+1] = check;
+	}
+
+	for(int i=0; i<vt.size()-1; i++)
+		vt[i]->next = vt[i+1];
+	vt[vt.size()-1]->next = nullptr;
+
+
+	return vt[0];
+}
+
+void printLL(Node head)
+{
+	while(head != nullptr)
+	{
+		cout << head->data << " ";
+		head = head->next;
+	}
+}
+
+DoubleLL takeNodeHightDistanceLow(DoubleLL head)
+{
+	DoubleLL cur = head->next;
+	while(cur != head)
+	{
+		if(cur->data > head->data)
+			return cur;
+		cur = cur->next;
+	}
+
+	return nullptr;
+}
+
+DoubleLL modifyDouleLL2PointerHightData(DoubleLL head)
+{
+	DoubleLL cur = head, tail = head;
+	
+	while(tail->next != nullptr)
+		tail = tail->next;
+	tail->next = head;
+
+	do
+	{
+		cur->rand = takeNodeHightDistanceLow(cur);
+		cur = cur->next;
+	}while(cur != head);
+
+	tail->next = nullptr;
+	return head;
+}
+
+void fronBackSplit(DoubleLL head, DoubleLL &a, DoubleLL &b)
+{
+	if(head == nullptr || head->rand == nullptr)
+	{
+		a = head;
+		b = nullptr;
+		return;
+	}
+
+	DoubleLL fast, low;
+	fast = head->next;
+	low = head;
+
+	while(fast != nullptr)
+	{
+		fast = fast->next;
+		if(fast != nullptr)
+		{
+			fast = fast->next;
+			low = low->next;
+		}
+	}
+
+	a = head;
+	b = low->rand;
+	low->rand = nullptr;
+}
+
+DoubleLL merge2LL(DoubleLL a, DoubleLL b)
+{
+	DoubleLL result = nullptr;
+
+	if(a == nullptr)
+		return b;
+	else if(b == nullptr)
+		return a;
+
+	if(a->data < b->data)
+	{
+		result = a;
+		a->rand = merge2LL(a->rand, b);
+	}
+	else
+	{
+		result = b;
+		b->rand = merge2LL(a, b->rand);
+	}
+
+	return result;
+}
+
+void modifyDouleLL2PointerHightData2(DoubleLL &head)
+{
+	// DoubleLL tmp = head;
+	// while(tmp != nullptr)
+	// {
+	// 	tmp->rand = tmp->next;
+	// 	tmp = tmp->next;
+	// }
+
+	if(head == nullptr || head->rand == nullptr)
+		return;
+
+	DoubleLL a, b;
+	fronBackSplit(head, a, b);
+
+	modifyDouleLL2PointerHightData2(a);
+	modifyDouleLL2PointerHightData2(b);
+
+	head = merge2LL(a, b);
+
+	// DoubleLL head, prv;
+	// head = prv = createElementDoubleLL(5);
+	// prv->next = createElementDoubleLL(1);
+	// prv = prv->next;
+	// prv->next = createElementDoubleLL(2);
+	// prv = prv->next;
+	// prv->next = createElementDoubleLL(3);
+
+	// printDoubleLL(head);
+	// cout << endl;
+	// modifyDouleLL2PointerHightData(head);
+
+	// printDoubleLL(head);
+}
+
+int compare2LLString(Node head1, Node head2)
+{
+	while(head1 != nullptr && head2 != nullptr)
+	{
+		if(head1->data > head2->data)
+			return 1;
+		else if(head1->data < head2->data)
+			return -1;
+		else
+		{
+			head1 = head1->next;
+			head2 = head2->next;
+		}
+	}
+
+	if(head1 != nullptr)
+		return 1;
+	else if(head2 != nullptr)
+		return -1;
+	else
+		return 0;
+}
+
+Node transferStringToLL(string s)
+{
+	Node head = nullptr;
+	for(int i=0; i<s.length(); i++)
+		insertNodePosition(head, s[i], i);
+
+	return head;
+}
+
+Node rearrangeEvenOddPosTogether(Node head)
+{
+	if(head == nullptr)
+		return head;
+
+	Node even, odd, prv1, prv2;
+	prv1 = even = head->next;
+	prv2 = odd = head;
+
+	while(prv1->next != nullptr && prv1->next->next != nullptr && prv2->next != nullptr && prv2->next->next != nullptr)
+	{
+		prv2->next = prv2->next->next;
+		prv1->next = prv1->next->next;
+		prv2 = prv2->next;
+		prv1 = prv1->next;
+	}
+
+	if(prv2->next != nullptr && prv2->next->next != nullptr)
+	{
+		prv2->next = prv2->next->next;
+		prv2 = prv2->next;
+	}
+
+	prv1->next = nullptr;
+	prv2->next = even;
+
+	return odd;
+}
+
 int main()
 {
-	Node head1 = nullptr, head2 = nullptr;
-	int n, m, x;
-	cin >> n >> m;
+	int n, x;
+	cin >> n;
+	Node head = nullptr;
 
 	for(int i=0; i<n; i++)
 	{
 		cin >> x;
-		insertNodePosition(head1, x, i);
+		insertNodePosition(head, x, i);
 	}
 
-	printList(head1);
+	printLL(head);
 	cout << endl;
-	head1 = rotateLLByK(head1, m);
-	printList(head1);
-
+	head = rearrangeEvenOddPosTogether(head);
+	printLL(head);
 	return 0;
-}
-
+} 
