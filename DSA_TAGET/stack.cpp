@@ -1,62 +1,158 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <map>
 using namespace std;
 
-void showBinaryRecur(int a, int radix)
+struct stack
 {
-	if(a / radix == 0)
-		cout << a << " ";
-	else
+	int *e = new int;
+	int capacity;
+	int story;
+
+	stack()
 	{
-		showBinaryRecur(a / radix, radix);
-		cout << a % radix << " ";
+		capacity = 1;
+		story = -1;
 	}
+
+	void push(int val)
+	{
+		if(story + 1 == capacity)
+			doubling();
+		e[++story] = val;
+	}
+
+	bool pop()
+	{
+		if(story == -1)
+			return false;
+
+		if(capacity / (story + 1) == 2)
+		{
+			int *tmp = e;
+			e = new int[capacity >> 1];
+			for(int i=0; i<story; i++)
+				e[i] = tmp[i];
+			delete []tmp;
+			capacity /= 2;
+		}
+
+		story--;
+		return true;
+	}
+
+	int size()
+	{
+		return story + 1;
+	}
+
+	bool isEmpty()
+	{
+		if(story == -1)
+			return true;
+		return false;
+	}
+
+	int top()
+	{
+		if(story == -1)
+			return -1;
+		return e[story];
+	}
+
+	void doubling()
+	{
+		int *tmp = e;
+		e = new int[capacity << 1];
+		for(int i=0; i<=story; i++)
+			e[i] = tmp[i];
+		delete []tmp;
+		capacity *= 2;
+	}
+};
+typedef struct stack stack;
+
+int caculate(int a, int b, char ope)
+{
+	if(ope == '*')
+		return b * a;
+	else if(ope == '/')
+		return b / a;
+	else if(ope == '+')
+		return b + a;
+	else
+		return b - a;
 }
 
-bool moveTrain(int *a, int n)
+int caculateInfix(string s)
 {
-	stack<int> st;
-	int moveCur = 1, indexCur = 0;
+	map<char, int > mp;
+	mp['+'] = mp['-'] = 1;
+	mp['*'] = mp['/'] = 2;
+	mp['('] = mp[')'] = 0;
 
-	while(indexCur < n)
+	stack st1, st2;
+	for(int i=0; i<s.length(); i++)
 	{
-		if(a[indexCur] == moveCur)
+		if(s[i] >= '0' && s[i] <= '9')
+			st1.push(s[i] - '0');
+		else if(s[i] == ')')
 		{
-			cout << "A->C" << endl; 
-			indexCur++;
-			moveCur++;
+			int result;
+			while(st2.top() != '(')
+			{
+				int a = st1.top();
+				st1.pop();
+				int b = st1.top();
+				st1.pop();
+				result = caculate(a, b, st2.top());
+				st2.pop();
+				st1.push(result);
+			}
+			st2.pop();
 		}
-		else if(!st.empty() && st.top() == a[indexCur])
+		else if(mp[st2.top()] < mp[s[i]] || s[i] == '(' || st2.size() == 0)
 		{
-			cout << "B->C" << endl;
-			indexCur++;
-			st.pop();
+			st2.push(s[i]);
 		}
-		else if(a[indexCur] < moveCur)
-			return false;
 		else
 		{
-			cout << "A->B" << endl;
-			st.push(moveCur);
-			moveCur++;
+			int result;
+			while(st2.size() != 0 && mp[st2.top()] >= mp[s[i]])
+			{
+				int a = st1.top();
+				st1.pop();
+				int b = st1.top();
+				st1.pop();
+				result = caculate(a, b, st2.top());
+				st2.pop();
+				st1.push(result);
+			}
+			st2.push(s[i]);
 		}
+		// cout << st1.top() << " " << (char)st2.top() << " " << st2.size() << endl;
 	}
 
-	return true;
+	while(st2.size() != 0)
+	{
+		int result;
+		int a = st1.top();
+		st1.pop();
+		int b = st1.top();
+		st1.pop();
+		result = caculate(a, b, st2.top());
+		st2.pop();
+		st1.push(result);
+	}
+
+	return st1.top();
 }
 
 int main()
 {
-	int n; cin >> n;
-	int *arr = new int[n];
-
-	for(int i=0; i<n; i++)
-		cin >> arr[i];
-
-
-	if(moveTrain(arr, n))
-		cout << "true" << endl;
-	else
-		cout << "false" << endl;
+	string a;
+	getline(cin, a);
+	cout << caculateInfix(a) << endl;
 
 	return 0;
 }
