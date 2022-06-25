@@ -1950,6 +1950,32 @@ Node rearrangeEvenOddPosTogether(Node head)
 	return odd;
 }
 
+bool isPalindromeStack(Node head)
+{
+	stack<int> st;
+	Node fast, low;
+	fast = low = head;
+	while(fast != nullptr && fast->next != nullptr)
+	{
+		st.push(low->data);
+		low = low->next;
+		fast = fast->next->next;
+	}
+
+	if(fast != nullptr)
+		low = low->next;
+
+	while(!st.empty())
+	{
+		if(st.top() != low->data)
+			return false;
+		st.pop();
+		low = low->next;
+	}
+
+	return true;
+}
+
 int main()
 {
 	int n, x;
@@ -1964,7 +1990,9 @@ int main()
 
 	printLL(head);
 	cout << endl;
-	head = rearrangeEvenOddPosTogether(head);
-	printLL(head);
+	if(isPalindromeStack(head))
+		cout << "yes" << endl;
+	else 
+		cout << "none" << endl;
 	return 0;
 } 
