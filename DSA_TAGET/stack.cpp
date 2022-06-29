@@ -148,11 +148,72 @@ int caculateInfix(string s)
 	return st1.top();
 }
 
+void addElementIntoStack(stack &st, int data)
+{
+	if(st.isEmpty())
+	{
+		st.push(data);
+		return;
+	}
+	
+	int tmp = st.top();
+	st.pop();
+	addElementIntoStack(st, data);
+	st.push(tmp);
+}
+
+void reverseStack(stack &st)
+{
+	if(st.isEmpty())
+		return;
+	int data = st.top();
+	st.pop();
+	reverseStack(st);
+	addElementIntoStack(st, data);
+}
+
+string removeAllAdjacentDuplicate(string s)
+{
+	stack wentThrough, tmp;
+	for(int i=0; i<s.length(); i++)
+	{
+		if(wentThrough.isEmpty() || wentThrough.top() != s[i])
+			wentThrough.push(s[i]);
+		else
+		{
+			do
+			{
+				i++;
+			}
+			while(i < s.length() && s[i] == wentThrough.top());
+			i--;
+			wentThrough.pop();
+		}
+	}
+
+	while(!wentThrough.isEmpty())
+	{
+		tmp.push(wentThrough.top());
+		wentThrough.pop();
+	}
+
+	string a;
+	while(!tmp.isEmpty())
+	{
+		string b = " ";
+		b[0] = tmp.top();
+		a = a + b;
+		tmp.pop();
+	}
+
+	return a;
+}
+
 int main()
 {
 	string a;
 	getline(cin, a);
-	cout << caculateInfix(a) << endl;
+	cout << removeAllAdjacentDuplicate(a) << endl;
 
 	return 0;
 }
