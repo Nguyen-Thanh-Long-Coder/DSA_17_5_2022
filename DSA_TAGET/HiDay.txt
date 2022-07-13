@@ -1,3 +1,12 @@
+6
+4
+3
+1
+2
+5
+9
+2
+
 Hello Long ^^
 17/5/2022
 LinkedList

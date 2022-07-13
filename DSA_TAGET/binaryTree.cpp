@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <iostream>
 #include <stack>
+#include <string>
 #include <queue>
 using namespace std;
 
@@ -541,13 +542,136 @@ void traverTreeNLRDataIAndL(Node root)
 	}
 }
 
+void traversalLNR(Node root)
+{
+	if(root == nullptr)
+		return;
+	stack<Node> st;
+
+	while(1)
+	{
+		while(root != nullptr)
+		{
+			st.push(root);
+			root = root->left;
+		}
+
+		if(st.empty())
+			break;
+		else
+		{
+			cout << st.top() << " ";
+			root = st.top()->right;
+			st.pop();
+		}
+	}
+}
+
+Node findingInorderSuccessor(Node root, Node find)
+{
+	stack<Node> st;
+
+	while(1)
+	{
+		while(root != nullptr)
+		{
+			st.push(root);
+			root = root->left;
+		}
+
+		if(st.empty())
+			break;
+		else
+		{
+			if(st.top() == find)
+			{
+				Node tmp = st.top()->right;
+				while(tmp != nullptr && tmp->left != nullptr)
+					tmp = tmp->left;
+				return tmp;
+			}
+			
+			root = st.top()->right;
+			st.pop();
+		}
+	}
+} 
+
+Node buildExpressionTree(string postfix)
+{
+	map<int, int> priority;
+	priority['+'] = priority['-'] = 1;
+	priority['*'] = priority['/'] = 2;
+	priority['('] = priority[')'] = 0;
+
+	stack<Node> stOperand, stOperator;
+	for(int i=0; i<postfix.length(); i++)
+	{
+		if(postfix[i] >= '0' && postfix[i] <= '9')
+			stOperand.push(new node(postfix[i]));
+		else
+		{
+			if(stOperator.empty() || (postfix[i] == '(') || (priority[postfix[i]] > priority[stOperator.top()->data]))
+				stOperator.push(new node(postfix[i]));
+			else if(postfix[i] == ')')
+			{
+				// a operator b
+				while(stOperator.top()->data != '(')
+				{
+					Node b = stOperand.top();
+					stOperand.pop();
+					Node a = stOperand.top();
+					stOperand.pop();
+					Node rootSub = stOperator.top();
+					stOperator.pop();
+					rootSub->left = a;
+					rootSub->right = b;
+					stOperand.push(rootSub);
+				}
+				Node dele = stOperator.top();
+				stOperator.pop();
+				delete dele;
+			}
+			else
+			{
+				while(!stOperator.empty() && priority[stOperator.top()->data] > priority[postfix[i]])
+				{
+					Node b = stOperand.top();
+					stOperand.pop();
+					Node a = stOperand.top();
+					stOperand.pop();
+					Node rootSub = stOperator.top();
+					stOperator.pop();
+					rootSub->left = a;
+					rootSub->right = b;
+					stOperand.push(rootSub);
+				}
+				stOperator.push(new node(postfix[i]));
+			}
+		}
+	}
+
+	while(!stOperator.empty())
+	{
+		Node b = stOperand.top();
+		stOperand.pop();
+		Node a = stOperand.top();
+		stOperand.pop();
+		Node rootSub = stOperator.top();
+		stOperator.pop();
+		rootSub->left = a;
+		rootSub->right = b;
+		stOperand.push(rootSub);
+	}
+
+	return stOperand.top();
+}
+
 int main()
 {
-	string a;
-	getline(cin, a);
-	int index = 0;
-	Node root = constructTreeByLAndI(a, index);
-	traverTreeNLRDataIAndL(root);
-
+	string postfix;
+	getline(cin, postfix);
+	Node root = buildExpressionTree(postfix);
+	traverTreeOrderLever(root);
 	return 0;
 }
